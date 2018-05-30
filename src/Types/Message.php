@@ -4,6 +4,8 @@ namespace TelegramBot\Api\Types;
 use TelegramBot\Api\BaseType;
 use TelegramBot\Api\InvalidArgumentException;
 use TelegramBot\Api\TypeInterface;
+use TelegramBot\Api\Types\Payments\Invoice;
+use TelegramBot\Api\Types\Payments\SuccessfulPayment;
 
 class Message extends BaseType implements TypeInterface
 {
@@ -12,37 +14,51 @@ class Message extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('message_id', 'from', 'date', 'chat');
+    static protected $requiredParams = ['message_id', 'date', 'chat'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'message_id' => true,
-        'from' => '\TelegramBot\Api\Types\User',
+        'from' => User::class,
         'date' => true,
-        'file_size' => true,
-        'chat' => '\TelegramBot\Api\Types\Chat',
-        'forward_from' => '\TelegramBot\Api\Types\User',
+        'chat' => Chat::class,
+        'forward_from' => User::class,
         'forward_date' => true,
-        'reply_to_message' => '\TelegramBot\Api\Types\Message',
+        'reply_to_message' => Message::class,
         'text' => true,
-        'audio' => '\TelegramBot\Api\Types\Audio',
-        'document' => '\TelegramBot\Api\Types\Document',
-        'photo' => '\TelegramBot\Api\Types\ArrayOfPhotoSize',
-        'sticker' => '\TelegramBot\Api\Types\Sticker',
-        'video' => '\TelegramBot\Api\Types\Video',
-        'contact' => '\TelegramBot\Api\Types\Contact',
-        'location' => '\TelegramBot\Api\Types\Location',
-        'new_chat_participant' => '\TelegramBot\Api\Types\User',
-        'left_chat_participant' => '\TelegramBot\Api\Types\User',
+        'entities' => ArrayOfMessageEntity::class,
+        'caption_entities' => ArrayOfMessageEntity::class,
+        'audio' => Audio::class,
+        'document' => Document::class,
+        'photo' => ArrayOfPhotoSize::class,
+        'sticker' => Sticker::class,
+        'video' => Video::class,
+        'voice' => Voice::class,
+        'caption' => true,
+        'contact' => Contact::class,
+        'location' => Location::class,
+        'venue' => Venue::class,
+        'new_chat_member' => User::class,
+        'left_chat_member' => User::class,
         'new_chat_title' => true,
-        'new_chat_photo' => '\TelegramBot\Api\Types\ArrayOfPhotoSize',
+        'new_chat_photo' => ArrayOfPhotoSize::class,
         'delete_chat_photo' => true,
-        'group_chat_created' => true
-    );
+        'group_chat_created' => true,
+        'supergroup_chat_created' => true,
+        'channel_chat_created' => true,
+        'migrate_to_chat_id' => true,
+        'migrate_from_chat_id' => true,
+        'pinned_message' => Message::class,
+        'invoice' => Invoice::class,
+        'successful_payment' => SuccessfulPayment::class,
+        'forward_signature' => true,
+        'author_signature' => true,
+        'connected_website' => true
+    ];
 
     /**
      * Unique message identifier
@@ -52,7 +68,7 @@ class Message extends BaseType implements TypeInterface
     protected $messageId;
 
     /**
-     * Sender
+     * Optional. Sender name. Can be empty for messages sent to channels
      *
      * @var \TelegramBot\Api\Types\User
      */
@@ -68,7 +84,7 @@ class Message extends BaseType implements TypeInterface
     /**
      * Conversation the message belongs to — user in case of a private message, GroupChat in case of a group
      *
-     * @var \TelegramBot\Api\TypeInterface
+     * @var \TelegramBot\Api\Types\Chat
      */
     protected $chat;
 
@@ -100,6 +116,14 @@ class Message extends BaseType implements TypeInterface
      * @var string
      */
     protected $text;
+
+    /**
+     * Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
+     * array of \TelegramBot\Api\Types\MessageEntity
+     *
+     * @var array
+     */
+    protected $entities;
 
     /**
      * Optional. Message is an audio file, information about the file
@@ -138,6 +162,13 @@ class Message extends BaseType implements TypeInterface
     protected $video;
 
     /**
+     * Optional. Message is a voice message, information about the file
+     *
+     * @var \TelegramBot\Api\Types\Voice
+     */
+    protected $voice;
+
+    /**
      * Optional. Message is a shared contact, information about the contact
      *
      * @var \TelegramBot\Api\Types\Contact
@@ -152,18 +183,25 @@ class Message extends BaseType implements TypeInterface
     protected $location;
 
     /**
+     * Optional. Message is a venue, information about the venue
+     *
+     * @var \TelegramBot\Api\Types\Venue
+     */
+    protected $venue;
+
+    /**
      * Optional. A new member was added to the group, information about them (this member may be bot itself)
      *
      * @var \TelegramBot\Api\Types\User
      */
-    protected $newChatParticipant;
+    protected $newChatMember;
 
     /**
      * Optional. A member was removed from the group, information about them (this member may be bot itself)
      *
      * @var \TelegramBot\Api\Types\User
      */
-    protected $leftChatParticipant;
+    protected $leftChatMember;
 
     /**
      * Optional. A group title was changed to this value
@@ -194,6 +232,111 @@ class Message extends BaseType implements TypeInterface
     protected $groupChatCreated;
 
     /**
+     * Optional. Text description of the video (usually empty)
+     *
+     * @var string
+     */
+    protected $caption;
+
+
+    /**
+     * Optional. Service message: the supergroup has been created
+     *
+     * @var bool
+     */
+    protected $supergroupChatCreated;
+
+    /**
+     * Optional. Service message: the channel has been created
+     *
+     * @var bool
+     */
+    protected $channelChatCreated;
+
+    /**
+     * Optional. The group has been migrated to a supergroup with the specified identifier,
+     * not exceeding 1e13 by absolute value
+     *
+     * @var int
+     */
+    protected $migrateToChatId;
+
+    /**
+     * Optional. The supergroup has been migrated from a group with the specified identifier,
+     * not exceeding 1e13 by absolute value
+     *
+     * @var int
+     */
+    protected $migrateFromChatId;
+
+    /**
+     * Optional. Specified message was pinned.Note that the Message object in this field
+     * will not contain further reply_to_message fields even if it is itself a reply.
+     *
+     * @var Message
+     */
+    protected $pinnedMessage;
+
+    /**
+     * Optional. Message is an invoice for a payment, information about the invoice.
+     *
+     * @var Invoice
+     */
+    protected $invoice;
+
+    /**
+     * Optional. Message is a service message about a successful payment, information about the payment.
+     *
+     * @var SuccessfulPayment
+     */
+    protected $successfulPayment;
+
+    /**
+     * Optional. For messages forwarded from channels, signature of the post author if present
+     *
+     * @var string
+     */
+    protected $forwardSignature;
+
+    /**
+     * Optional. Signature of the post author for messages in channels
+     *
+     * @var string
+     */
+    protected $authorSignature;
+
+    /**
+     * Optional. For messages with a caption, special entities like usernames,
+     * URLs, bot commands, etc. that appear in the caption
+     *
+     * @var ArrayOfMessageEntity
+     */
+    protected $captionEntities;
+
+    /**
+     * Optional. The domain name of the website on which the user has logged in.
+     *
+     * @var string
+     */
+    protected $connectedWebsite;
+
+    /**
+     * @return string
+     */
+    public function getCaption()
+    {
+        return $this->caption;
+    }
+
+    /**
+     * @param string $caption
+     */
+    public function setCaption($caption)
+    {
+        $this->caption = $caption;
+    }
+
+    /**
      * @return Audio
      */
     public function getAudio()
@@ -210,7 +353,7 @@ class Message extends BaseType implements TypeInterface
     }
 
     /**
-     * @return TypeInterface
+     * @return Chat
      */
     public function getChat()
     {
@@ -218,9 +361,9 @@ class Message extends BaseType implements TypeInterface
     }
 
     /**
-     * @param TypeInterface $chat
+     * @param Chat $chat
      */
-    public function setChat(TypeInterface $chat)
+    public function setChat(Chat $chat)
     {
         $this->chat = $chat;
     }
@@ -251,6 +394,8 @@ class Message extends BaseType implements TypeInterface
 
     /**
      * @param int $date
+     *
+     * @throws InvalidArgumentException
      */
     public function setDate($date)
     {
@@ -274,7 +419,7 @@ class Message extends BaseType implements TypeInterface
      */
     public function setDeleteChatPhoto($deleteChatPhoto)
     {
-        $this->deleteChatPhoto = (bool) $deleteChatPhoto;
+        $this->deleteChatPhoto = (bool)$deleteChatPhoto;
     }
 
     /**
@@ -303,6 +448,8 @@ class Message extends BaseType implements TypeInterface
 
     /**
      * @param int $forwardDate
+     *
+     * @throws InvalidArgumentException
      */
     public function setForwardDate($forwardDate)
     {
@@ -342,23 +489,23 @@ class Message extends BaseType implements TypeInterface
      */
     public function setGroupChatCreated($groupChatCreated)
     {
-        $this->groupChatCreated = (bool) $groupChatCreated;
+        $this->groupChatCreated = (bool)$groupChatCreated;
     }
 
     /**
      * @return User
      */
-    public function getLeftChatParticipant()
+    public function getLeftChatMember()
     {
-        return $this->leftChatParticipant;
+        return $this->leftChatMember;
     }
 
     /**
-     * @param User $leftChatParticipant
+     * @param User $leftChatMember
      */
-    public function setLeftChatParticipant($leftChatParticipant)
+    public function setLeftChatMember($leftChatMember)
     {
-        $this->leftChatParticipant = $leftChatParticipant;
+        $this->leftChatMember = $leftChatMember;
     }
 
     /**
@@ -378,6 +525,22 @@ class Message extends BaseType implements TypeInterface
     }
 
     /**
+     * @return Venue
+     */
+    public function getVenue()
+    {
+        return $this->venue;
+    }
+
+    /**
+     * @param Venue $venue
+     */
+    public function setVenue($venue)
+    {
+        $this->venue = $venue;
+    }
+
+    /**
      * @return int
      */
     public function getMessageId()
@@ -387,10 +550,12 @@ class Message extends BaseType implements TypeInterface
 
     /**
      * @param int $messageId
+     *
+     * @throws InvalidArgumentException
      */
     public function setMessageId($messageId)
     {
-        if (is_integer($messageId)) {
+        if (is_integer($messageId) || is_float($messageId)) {
             $this->messageId = $messageId;
         } else {
             throw new InvalidArgumentException();
@@ -400,17 +565,17 @@ class Message extends BaseType implements TypeInterface
     /**
      * @return User
      */
-    public function getNewChatParticipant()
+    public function getNewChatMember()
     {
-        return $this->newChatParticipant;
+        return $this->newChatMember;
     }
 
     /**
-     * @param User $newChatParticipant
+     * @param User $newChatMember
      */
-    public function setNewChatParticipant($newChatParticipant)
+    public function setNewChatMember($newChatMember)
     {
-        $this->newChatParticipant = $newChatParticipant;
+        $this->newChatMember = $newChatMember;
     }
 
     /**
@@ -510,6 +675,22 @@ class Message extends BaseType implements TypeInterface
     }
 
     /**
+     * @return array
+     */
+    public function getEntities()
+    {
+        return $this->entities;
+    }
+
+    /**
+     * @param array $entities
+     */
+    public function setEntities($entities)
+    {
+        $this->entities = $entities;
+    }
+
+    /**
      * @return User
      */
     public function getFrom()
@@ -539,5 +720,201 @@ class Message extends BaseType implements TypeInterface
     public function setVideo(Video $video)
     {
         $this->video = $video;
+    }
+
+    /**
+     * @return Voice
+     */
+    public function getVoice()
+    {
+        return $this->voice;
+    }
+
+    /**
+     * @param Voice $voice
+     */
+    public function setVoice($voice)
+    {
+        $this->voice = $voice;
+    }
+
+    /**
+     * @param boolean $supergroupChatCreated
+     */
+    public function setSupergroupChatCreated($supergroupChatCreated)
+    {
+        $this->supergroupChatCreated = $supergroupChatCreated;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSupergroupChatCreated()
+    {
+        return $this->supergroupChatCreated;
+    }
+
+    /**
+     * @param boolean $channelChatCreated
+     */
+    public function setChannelChatCreated($channelChatCreated)
+    {
+        $this->channelChatCreated = $channelChatCreated;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isChannelChatCreated()
+    {
+        return $this->channelChatCreated;
+    }
+
+    /**
+     * @param int $migrateToChatId
+     */
+    public function setMigrateToChatId($migrateToChatId)
+    {
+        $this->migrateToChatId = $migrateToChatId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMigrateToChatId()
+    {
+        return $this->migrateToChatId;
+    }
+
+    /**
+     * @param int $migrateFromChatId
+     */
+    public function setMigrateFromChatId($migrateFromChatId)
+    {
+        $this->migrateFromChatId = $migrateFromChatId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMigrateFromChatId()
+    {
+        return $this->migrateFromChatId;
+    }
+
+    /**
+     * @return Message
+     */
+    public function getPinnedMessage()
+    {
+        return $this->pinnedMessage;
+    }
+
+    /**
+     * @param Message $pinnedMessage
+     */
+    public function setPinnedMessage($pinnedMessage)
+    {
+        $this->pinnedMessage = $pinnedMessage;
+    }
+
+    /**
+     * @author MY
+     * @return Invoice
+     */
+    public function getInvoice()
+    {
+        return $this->invoice;
+    }
+
+    /**
+     * @author MY
+     * @param Invoice $invoice
+     */
+    public function setInvoice($invoice)
+    {
+        $this->invoice = $invoice;
+    }
+
+    /**
+     * @author MY
+     * @return SuccessfulPayment
+     */
+    public function getSuccessfulPayment()
+    {
+        return $this->successfulPayment;
+    }
+
+    /**
+     * @author MY
+     * @param SuccessfulPayment $successfulPayment
+     */
+    public function setSuccessfulPayment($successfulPayment)
+    {
+        $this->successfulPayment = $successfulPayment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getForwardSignature()
+    {
+        return $this->forwardSignature;
+    }
+
+    /**
+     * @param string $forwardSignature
+     */
+    public function setForwardSignature($forwardSignature)
+    {
+        $this->forwardSignature = $forwardSignature;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthorSignature()
+    {
+        return $this->authorSignature;
+    }
+
+    /**
+     * @param string $authorSignature
+     */
+    public function setAuthorSignature($authorSignature)
+    {
+        $this->authorSignature = $authorSignature;
+    }
+
+    /**
+     * @return ArrayOfMessageEntity
+     */
+    public function getCaptionEntities()
+    {
+        return $this->captionEntities;
+    }
+
+    /**
+     * @param ArrayOfMessageEntity $captionEntities
+     */
+    public function setCaptionEntities($captionEntities)
+    {
+        $this->captionEntities = $captionEntities;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConnectedWebsite()
+    {
+        return $this->connectedWebsite;
+    }
+
+    /**
+     * @param string $connectedWebsite
+     */
+    public function setConnectedWebsite($connectedWebsite)
+    {
+        $this->connectedWebsite = $connectedWebsite;
     }
 }

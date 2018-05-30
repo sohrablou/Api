@@ -19,20 +19,20 @@ class Sticker extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('file_id', 'thumb', 'width', 'height');
+    static protected $requiredParams = ['file_id', 'width', 'height'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'file_id' => true,
         'width' => true,
         'height' => true,
-        'thumb' => '\TelegramBot\Api\Types\PhotoSize',
+        'thumb' => PhotoSize::class,
         'file_size' => true,
-    );
+    ];
 
     /**
      * Unique identifier for this file
@@ -58,7 +58,7 @@ class Sticker extends BaseType implements TypeInterface
     /**
      * Document thumbnail as defined by sender
      *
-     * @var \TelegramBot\Api\Types\PhotoSize
+     * @var PhotoSize
      */
     protected $thumb;
 
@@ -95,6 +95,8 @@ class Sticker extends BaseType implements TypeInterface
 
     /**
      * @param int $fileSize
+     *
+     * @throws InvalidArgumentException
      */
     public function setFileSize($fileSize)
     {
@@ -115,6 +117,8 @@ class Sticker extends BaseType implements TypeInterface
 
     /**
      * @param int $height
+     *
+     * @throws InvalidArgumentException
      */
     public function setHeight($height)
     {
@@ -151,6 +155,8 @@ class Sticker extends BaseType implements TypeInterface
 
     /**
      * @param int $width
+     *
+     * @throws InvalidArgumentException
      */
     public function setWidth($width)
     {

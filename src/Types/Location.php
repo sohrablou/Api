@@ -19,17 +19,17 @@ class Location extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('latitude', 'longitude');
+    static protected $requiredParams = ['latitude', 'longitude'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'latitude' => true,
-        'longitude' => true,
-    );
+        'longitude' => true
+    ];
 
     /**
      * Longitude as defined by sender
@@ -55,6 +55,8 @@ class Location extends BaseType implements TypeInterface
 
     /**
      * @param float $latitude
+     *
+     * @throws InvalidArgumentException
      */
     public function setLatitude($latitude)
     {
@@ -75,6 +77,8 @@ class Location extends BaseType implements TypeInterface
 
     /**
      * @param float $longitude
+     *
+     * @throws InvalidArgumentException
      */
     public function setLongitude($longitude)
     {

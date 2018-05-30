@@ -19,19 +19,21 @@ class Audio extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('file_id', 'duration');
+    static protected $requiredParams = ['file_id', 'duration'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'file_id' => true,
         'duration' => true,
+        'performer' => true,
+        'title' => true,
         'mime_type' => true,
         'file_size' => true
-    );
+    ];
 
     /**
      * Unique identifier for this file
@@ -46,6 +48,20 @@ class Audio extends BaseType implements TypeInterface
      * @var int
      */
     protected $duration;
+
+    /**
+     * Optional. Performer of the audio as defined by sender or by audio tags
+     *
+     * @var string
+     */
+    protected $performer;
+
+    /**
+     * Optional. Title of the audio as defined by sender or by audio tags
+     *
+     * @var string
+     */
+    protected $title;
 
     /**
      * Optional. MIME type of the file as defined by sender
@@ -71,6 +87,8 @@ class Audio extends BaseType implements TypeInterface
 
     /**
      * @param int $duration
+     *
+     * @throws InvalidArgumentException
      */
     public function setDuration($duration)
     {
@@ -79,6 +97,38 @@ class Audio extends BaseType implements TypeInterface
         } else {
             throw new InvalidArgumentException();
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPerformer()
+    {
+        return $this->performer;
+    }
+
+    /**
+     * @param string $performer
+     */
+    public function setPerformer($performer)
+    {
+        $this->performer = $performer;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**
@@ -107,6 +157,8 @@ class Audio extends BaseType implements TypeInterface
 
     /**
      * @param int $fileSize
+     *
+     * @throws InvalidArgumentException
      */
     public function setFileSize($fileSize)
     {

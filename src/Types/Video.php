@@ -19,23 +19,22 @@ class Video extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('file_id', 'width', 'height', 'duration', 'thumb');
+    static protected $requiredParams = ['file_id', 'width', 'height', 'duration'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'file_id' => true,
         'width' => true,
         'height' => true,
         'duration' => true,
-        'thumb' => '\TelegramBot\Api\Types\PhotoSize',
+        'thumb' => PhotoSize::class,
         'mime_type' => true,
-        'file_size' => true,
-        'caption' => true
-    );
+        'file_size' => true
+    ];
 
     /**
      * Unique identifier for this file
@@ -68,7 +67,7 @@ class Video extends BaseType implements TypeInterface
     /**
      * Video thumbnail
      *
-     * @var \TelegramBot\Api\Types\PhotoSize
+     * @var PhotoSize
      */
     protected $thumb;
 
@@ -88,29 +87,6 @@ class Video extends BaseType implements TypeInterface
     protected $fileSize;
 
     /**
-     * Optional. Text description of the video (usually empty)
-     *
-     * @var string
-     */
-    protected $caption;
-
-    /**
-     * @return string
-     */
-    public function getCaption()
-    {
-        return $this->caption;
-    }
-
-    /**
-     * @param string $caption
-     */
-    public function setCaption($caption)
-    {
-        $this->caption = $caption;
-    }
-
-    /**
      * @return int
      */
     public function getDuration()
@@ -120,6 +96,8 @@ class Video extends BaseType implements TypeInterface
 
     /**
      * @param int $duration
+     *
+     * @throws InvalidArgumentException
      */
     public function setDuration($duration)
     {
@@ -156,6 +134,8 @@ class Video extends BaseType implements TypeInterface
 
     /**
      * @param int $fileSize
+     *
+     * @throws InvalidArgumentException
      */
     public function setFileSize($fileSize)
     {
@@ -176,6 +156,8 @@ class Video extends BaseType implements TypeInterface
 
     /**
      * @param int $height
+     *
+     * @throws InvalidArgumentException
      */
     public function setHeight($height)
     {
@@ -228,6 +210,8 @@ class Video extends BaseType implements TypeInterface
 
     /**
      * @param int $width
+     *
+     * @throws InvalidArgumentException
      */
     public function setWidth($width)
     {

@@ -19,17 +19,17 @@ class UserProfilePhotos extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('total_count', 'photos');
+    static protected $requiredParams = ['total_count', 'photos'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'total_count' => true,
-        'photos' => '\TelegramBot\Api\Types\ArrayOfArrayOfPhotoSize',
-    );
+        'photos' => ArrayOfArrayOfPhotoSize::class,
+    ];
 
     /**
      * Total number of profile pictures the target user has
@@ -72,6 +72,8 @@ class UserProfilePhotos extends BaseType implements TypeInterface
 
     /**
      * @param int $totalCount
+     *
+     * @throws InvalidArgumentException
      */
     public function setTotalCount($totalCount)
     {

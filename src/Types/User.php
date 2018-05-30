@@ -19,19 +19,21 @@ class User extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('id', 'first_name');
+    static protected $requiredParams = ['id', 'first_name'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'id' => true,
         'first_name' => true,
         'last_name' => true,
         'username' => true,
-    );
+        'language_code' => true,
+        'is_bot' => true
+    ];
 
     /**
      * Unique identifier for this user or bot
@@ -62,6 +64,20 @@ class User extends BaseType implements TypeInterface
     protected $username;
 
     /**
+     * Optional. IETF language tag of the user's language
+     *
+     * @var string
+     */
+    protected $languageCode;
+
+    /**
+     * True, if this user is a bot
+     *
+     * @var bool
+     */
+    protected $isBot;
+
+    /**
      * @return string
      */
     public function getFirstName()
@@ -87,10 +103,12 @@ class User extends BaseType implements TypeInterface
 
     /**
      * @param int $id
+     *
+     * @throws InvalidArgumentException
      */
     public function setId($id)
     {
-        if (is_integer($id)) {
+        if (is_integer($id) || is_float($id)) {
             $this->id = $id;
         } else {
             throw new InvalidArgumentException();
@@ -127,5 +145,37 @@ class User extends BaseType implements TypeInterface
     public function setUsername($username)
     {
         $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLanguageCode()
+    {
+        return $this->languageCode;
+    }
+
+    /**
+     * @param string $languageCode
+     */
+    public function setLanguageCode($languageCode)
+    {
+        $this->languageCode = $languageCode;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBot()
+    {
+        return $this->isBot;
+    }
+
+    /**
+     * @param bool $isBot
+     */
+    public function setIsBot($isBot)
+    {
+        $this->isBot = $isBot;
     }
 }

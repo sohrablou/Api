@@ -2,6 +2,7 @@
 
 namespace TelegramBot\Api\Test;
 
+use TelegramBot\Api\Types\Chat;
 use TelegramBot\Api\Types\Document;
 use TelegramBot\Api\Types\Location;
 use TelegramBot\Api\Types\Audio;
@@ -12,6 +13,7 @@ use TelegramBot\Api\Types\PhotoSize;
 use TelegramBot\Api\Types\Sticker;
 use TelegramBot\Api\Types\User;
 use TelegramBot\Api\Types\Video;
+use TelegramBot\Api\Types\Voice;
 
 class MessageTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,11 +25,32 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals(1, 'messageId', $item);
     }
 
+    public function testSet64bitMessageId()
+    {
+        $item = new Message();
+        $item->setMessageId(2147483648);
+        $this->assertAttributeEquals(2147483648, 'messageId', $item);
+    }
+
     public function testGetMessageId()
     {
         $item = new Message();
         $item->setMessageId(1);
         $this->assertEquals(1, $item->getMessageId());
+    }
+
+    public function testSetCaption()
+    {
+        $item = new Message();
+        $item->setCaption('test');
+        $this->assertAttributeEquals('test', 'caption', $item);
+    }
+
+    public function testGetCaption()
+    {
+        $item = new Message();
+        $item->setCaption('test');
+        $this->assertEquals('test', $item->getCaption());
     }
 
     public function testSetDate()
@@ -115,8 +138,9 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     public function testSetChatGroup()
     {
         $item = new Message();
-        $chat = GroupChat::fromResponse(array(
+        $chat = Chat::fromResponse(array(
             'id' => 1,
+            'type' => 'group',
             'title' => 'test chat'
         ));
         $item->setChat($chat);
@@ -126,20 +150,22 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     public function testGetChatGroup()
     {
         $item = new Message();
-        $chat = GroupChat::fromResponse(array(
+        $chat = Chat::fromResponse(array(
             'id' => 1,
+            'type' => 'group',
             'title' => 'test chat'
         ));
         $item->setChat($chat);
         $this->assertEquals($chat, $item->getChat());
-        $this->assertInstanceOf('\TelegramBot\Api\Types\GroupChat', $item->getChat());
+        $this->assertInstanceOf('\TelegramBot\Api\Types\Chat', $item->getChat());
     }
 
     public function testSetChatUser()
     {
         $item = new Message();
-        $user = User::fromResponse(array(
+        $user = Chat::fromResponse(array(
             'id' => 1,
+            'type' => 'private',
             'first_name' => 'Ilya',
             'last_name' => 'Gusev',
             'username' => 'iGusev'
@@ -151,15 +177,16 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     public function testGetChatUser()
     {
         $item = new Message();
-        $user = User::fromResponse(array(
+        $user = Chat::fromResponse(array(
             'id' => 1,
+            'type' => 'private',
             'first_name' => 'Ilya',
             'last_name' => 'Gusev',
             'username' => 'iGusev'
         ));
         $item->setChat($user);
         $this->assertEquals($user, $item->getChat());
-        $this->assertInstanceOf('\TelegramBot\Api\Types\User', $item->getChat());
+        $this->assertInstanceOf('\TelegramBot\Api\Types\Chat', $item->getChat());
     }
 
     public function testSetContact()
@@ -272,6 +299,33 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\TelegramBot\Api\Types\Audio', $item->getAudio());
     }
 
+    public function testSetVoice()
+    {
+        $item = new Message();
+        $voice = Voice::fromResponse(array(
+            'file_id' => 'testFileId1',
+            'duration' => 1,
+            'mime_type' => 'audio/mp3',
+            'file_size' => 3
+        ));
+        $item->setVoice($voice);
+        $this->assertAttributeEquals($voice, 'voice', $item);
+    }
+
+    public function testGetVoice()
+    {
+        $item = new Message();
+        $voice = Voice::fromResponse(array(
+            'file_id' => 'testFileId1',
+            'duration' => 1,
+            'mime_type' => 'audio/mp3',
+            'file_size' => 3
+        ));
+        $item->setVoice($voice);
+        $this->assertEquals($voice, $item->getVoice());
+        $this->assertInstanceOf('\TelegramBot\Api\Types\Voice', $item->getVoice());
+    }
+
     public function testSetVideo()
     {
         $item = new Message();
@@ -282,7 +336,6 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'duration' => 3,
             'mime_type' => 'video/mp4',
             'file_size' => 4,
-            'caption' => 'testcaption',
             'thumb' => array(
                 'file_id' => 'testFileId1',
                 'width' => 5,
@@ -304,7 +357,6 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'duration' => 3,
             'mime_type' => 'video/mp4',
             'file_size' => 4,
-            'caption' => 'testcaption',
             'thumb' => array(
                 'file_id' => 'testFileId1',
                 'width' => 5,
@@ -397,10 +449,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'last_name' => 'Gusev',
             'username' => 'iGusev'
         ));
-        $item->setLeftChatParticipant($user);
+        $item->setLeftChatMember($user);
 
 
-        $this->assertAttributeEquals($user, 'leftChatParticipant', $item);
+        $this->assertAttributeEquals($user, 'leftChatMember', $item);
     }
 
     public function testGetLeftChatParticipant()
@@ -412,10 +464,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'last_name' => 'Gusev',
             'username' => 'iGusev'
         ));
-        $item->setLeftChatParticipant($user);
+        $item->setLeftChatMember($user);
 
-        $this->assertEquals($user, $item->getLeftChatParticipant());
-        $this->assertInstanceOf('\TelegramBot\Api\Types\User', $item->getLeftChatParticipant());
+        $this->assertEquals($user, $item->getLeftChatMember());
+        $this->assertInstanceOf('\TelegramBot\Api\Types\User', $item->getLeftChatMember());
     }
 
     public function testSetNewChatParticipant()
@@ -427,10 +479,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'last_name' => 'Gusev',
             'username' => 'iGusev'
         ));
-        $item->setNewChatParticipant($user);
+        $item->setNewChatMember($user);
 
 
-        $this->assertAttributeEquals($user, 'newChatParticipant', $item);
+        $this->assertAttributeEquals($user, 'newChatMember', $item);
     }
 
     public function testGetNewChatParticipant()
@@ -442,10 +494,10 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'last_name' => 'Gusev',
             'username' => 'iGusev'
         ));
-        $item->setNewChatParticipant($user);
+        $item->setNewChatMember($user);
 
-        $this->assertEquals($user, $item->getNewChatParticipant());
-        $this->assertInstanceOf('\TelegramBot\Api\Types\User', $item->getNewChatParticipant());
+        $this->assertEquals($user, $item->getNewChatMember());
+        $this->assertInstanceOf('\TelegramBot\Api\Types\User', $item->getNewChatMember());
     }
 
     public function testSetNewChatTitle()
@@ -494,6 +546,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'date' => 2,
             'chat' => array(
                 'id' => 1,
+                'type' => 'group',
                 'title' => 'test chat'
             )
         ));
@@ -516,6 +569,7 @@ class MessageTest extends \PHPUnit_Framework_TestCase
             'date' => 2,
             'chat' => array(
                 'id' => 1,
+                'type' => 'group',
                 'title' => 'test chat'
             )
         ));
@@ -624,5 +678,176 @@ class MessageTest extends \PHPUnit_Framework_TestCase
     {
         $item = new Message();
         $item->setForwardDate('s');
+    }
+
+    public function testSetSupergroupChatCreated()
+    {
+        $item = new Message();
+        $item->setSupergroupChatCreated(true);
+
+        $this->assertAttributeEquals(true, 'supergroupChatCreated', $item);
+    }
+
+    public function testIsSupergroupChatCreated()
+    {
+        $item = Message::fromResponse(array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'supergroup_chat_created' => true
+        ));
+
+        $this->assertTrue($item->isSupergroupChatCreated());
+    }
+
+    public function testSetChannelChatCreated()
+    {
+        $item = new Message();
+        $item->setChannelChatCreated(true);
+
+        $this->assertAttributeEquals(true, 'channelChatCreated', $item);
+    }
+
+    public function testIsChannelChatCreated()
+    {
+        $item = Message::fromResponse(array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'channel_chat_created' => true
+        ));
+
+        $this->assertTrue($item->isChannelChatCreated());
+    }
+
+    public function testSetMigrateToChatId()
+    {
+        $item = new Message();
+        $item->setMigrateToChatId(2);
+        $this->assertAttributeEquals(2, 'migrateToChatId', $item);
+    }
+
+    public function testGetMigrateToChatId()
+    {
+        $item = Message::fromResponse(array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'migrate_to_chat_id' => 2
+        ));
+
+        $this->assertEquals(2, $item->getMigrateToChatId());
+    }
+
+    public function testSetMigrateFromChatId()
+    {
+        $item = new Message();
+        $item->setMigrateFromChatId(2);
+        $this->assertAttributeEquals(2, 'migrateFromChatId', $item);
+    }
+
+    public function testGetMigrateFromChatId()
+    {
+        $item = Message::fromResponse(array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'migrate_from_chat_id' => 3
+        ));
+
+        $this->assertEquals(3, $item->getMigrateFromChatId());
+    }
+
+    public function testToJson1()
+    {
+        $data = array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'migrate_from_chat_id' => 3
+        );
+
+        $item = Message::fromResponse($data);
+        $this->assertJson(json_encode($data), $item->toJson());
+    }
+
+    public function testToJson2()
+    {
+        $data = array(
+            'message_id' => 1,
+            'from' => array(
+                'first_name' => 'Ilya',
+                'last_name' => 'Gusev',
+                'id' => 123456,
+                'username' => 'iGusev'
+            ),
+            'date' => 2,
+            'chat' => array(
+                'id' => 1,
+                'type' => 'group',
+                'title' => 'test chat'
+            ),
+            'entities' => array(
+                array(
+                    "type" => "bot_command",
+                    "offset" => 0,
+                    "length" => 7,
+                )
+            ),
+            'migrate_from_chat_id' => 3
+        );
+
+        $item = Message::fromResponse($data);
+        $this->assertJson(json_encode($data), $item->toJson());
     }
 }

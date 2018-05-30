@@ -15,19 +15,23 @@ abstract class BaseType
      *
      * @var array
      */
-    protected static $requiredParams = array();
+    protected static $requiredParams = [];
 
     /**
      * Map of input data
      *
      * @var array
      */
-    protected static $map = array();
+    protected static $map = [];
 
     /**
      * Validate input data
      *
      * @param array $data
+     *
+     * @return bool
+     *
+     * @throws InvalidArgumentException
      */
     public static function validate($data)
     {
@@ -59,12 +63,21 @@ abstract class BaseType
 
     public function toJson($inner = false)
     {
-        $output = array();
+        $output = [];
 
         foreach (static::$map as $key => $item) {
             $property = lcfirst(self::toCamelCase($key));
             if (!is_null($this->$property)) {
-                $output[$key] = $item === true ? $this->$property : $this->$property->toJson(true);
+                if (is_array($this->$property)) {
+                    $output[$key] = array_map(
+                        function ($v) {
+                            return is_object($v) ? $v->toJson(true) : $v;
+                        },
+                        $this->$property
+                    );
+                } else {
+                    $output[$key] = $item === true ? $this->$property : $this->$property->toJson(true);
+                }
             }
         }
 
@@ -73,6 +86,10 @@ abstract class BaseType
 
     public static function fromResponse($data)
     {
+        if ($data === true) {
+            return true;
+        }
+        
         self::validate($data);
         $instance = new static();
         $instance->map($data);

@@ -3,7 +3,6 @@
 namespace TelegramBot\Api\Types;
 
 use TelegramBot\Api\BaseType;
-use TelegramBot\Api\InvalidArgumentException;
 use TelegramBot\Api\TypeInterface;
 
 /**
@@ -19,19 +18,19 @@ class Contact extends BaseType implements TypeInterface
      *
      * @var array
      */
-    static protected $requiredParams = array('phone_number', 'first_name');
+    static protected $requiredParams = ['phone_number', 'first_name'];
 
     /**
      * {@inheritdoc}
      *
      * @var array
      */
-    static protected $map = array(
+    static protected $map = [
         'phone_number' => true,
         'first_name' => true,
         'last_name' => true,
         'user_id' => true
-    );
+    ];
 
     /**
      * Contact's phone number
@@ -57,7 +56,7 @@ class Contact extends BaseType implements TypeInterface
     /**
      * Optional. Contact's user identifier in Telegram
      *
-     * @var string
+     * @var int
      */
     protected $userId;
 
@@ -110,7 +109,7 @@ class Contact extends BaseType implements TypeInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getUserId()
     {
@@ -118,7 +117,7 @@ class Contact extends BaseType implements TypeInterface
     }
 
     /**
-     * @param string $userId
+     * @param int $userId
      */
     public function setUserId($userId)
     {
